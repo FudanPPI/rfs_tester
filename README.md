@@ -22,14 +22,14 @@ Add the dependency to your `Cargo.toml`:
 
 ```toml
 [dev-dependencies]
-rfs_tester = "1.1.2"
+rfs_tester = "1.1.3"
 ```
 
 or
 
 ```toml
 [dependencies]
-rfs_tester = "1.1.2"
+rfs_tester = "1.1.3"
 ```
 
 ## Overview
