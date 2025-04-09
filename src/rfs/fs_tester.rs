@@ -28,6 +28,7 @@ struct Permissions {
     links_allowed: bool,
 }
 
+#[allow(clippy::test_attr_in_doctest)]
 /// File System Tester is used to create a configured structure in a directory
 /// with files and links to them. It can start a custom test process
 /// and remove the file system structure after the testing is complete or fails.
@@ -71,7 +72,7 @@ impl FsTester {
         rand::rng().random::<u64>()
     }
 
-    fn gen_dir_path(dir_path: &PathBuf, name: &str, level: u32) -> PathBuf {
+    fn gen_dir_path(dir_path: &Path, name: &str, level: u32) -> PathBuf {
         if level == 0 {
             let uniq_code = Self::get_random_code();
             dir_path.join(format!("{}_{}", name, uniq_code))
@@ -122,7 +123,7 @@ impl FsTester {
             let entry = entry?;
             let src_entry_path = Arc::new(PathBuf::from(entry.path()));
             let filename = src_entry_path
-                .into_iter()
+                .iter()
                 .last()
                 .expect("source dir should not be empty");
             let dst_entry_path = Arc::new(dst_path.clone().join(filename));
@@ -167,7 +168,7 @@ impl FsTester {
 
         match &conf.content {
             FileContent::InlineBytes(data) => {
-                dst_file.write_all(&data).await?;
+                dst_file.write_all(data).await?;
             }
             FileContent::InlineText(text) => {
                 dst_file.write_all(text.as_bytes()).await?;
@@ -411,10 +412,8 @@ impl FsTester {
     pub fn parse_config(config_str: &str) -> Result<Configuration> {
         // detect format parse and return config instance
         match config_str.chars().next() {
-            Some('{') | Some('[') => {
-                serde_json::from_str(config_str).or_else(|error| Err(error.into()))
-            }
-            Some(_) => serde_yaml::from_str(config_str).or_else(|error| Err(error.into())),
+            Some('{') | Some('[') => serde_json::from_str(config_str).map_err(|error| error.into()),
+            Some(_) => serde_yaml::from_str(config_str).map_err(|error| error.into()),
             None => Err(FsTesterError::empty_config()),
         }
     }
@@ -431,15 +430,13 @@ impl FsTester {
         let config: Configuration = Self::parse_config(config_str)?;
 
         // The directory where the temporary test sandbox will be created.
-        let base_dir = if start_point.len() == 0 {
+        let base_dir = if start_point.is_empty() {
             // If the starting point is not provided as an argument, we will use the current location.
             PathBuf::from(".")
+        } else if Path::new(start_point).is_dir() {
+            PathBuf::from(start_point)
         } else {
-            if Path::new(start_point).is_dir() {
-                PathBuf::from(start_point)
-            } else {
-                return Err(FsTesterError::should_start_from_directory());
-            }
+            return Err(FsTesterError::should_start_from_directory());
         };
 
         // Checks if the configuration starts from a single config entry (Directory or CloneDirectory).
@@ -449,8 +446,7 @@ impl FsTester {
         // After previous check we can take ConfigEntry
         let root_config_entry = config
             .0
-            .iter()
-            .next()
+            .first()
             .expect("zero level of configuration should have only one entry");
         // And do verification if the configuration entry is Directory or CloneDirectory
         let semaphore = Arc::new(Semaphore::new(SEMAPHORE_LIMIT));
@@ -541,8 +537,6 @@ impl FsTester {
 
         if let Err(e) = test_proc(dirname) {
             panic!("inner test has error: {}", e)
-        } else {
-            ()
         }
     }
 }
