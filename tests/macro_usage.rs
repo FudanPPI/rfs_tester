@@ -22,7 +22,6 @@ fn file_creation_test_with_macro(dirname: &str) -> std::io::Result<()> {
 #[rfs_test(
     config = r#"---
     - !directory
-        name: test
         content:
           - !file
               name: test1.txt
@@ -32,8 +31,7 @@ fn file_creation_test_with_macro(dirname: &str) -> std::io::Result<()> {
               name: test2.txt
               content:
                 !inline_text "File 2"
-    "#,
-    start_point = "."
+    "#
 )]
 fn multiple_files_test(dirname: &str) -> std::io::Result<()> {
     let current_dir = std::path::PathBuf::from(dirname);
