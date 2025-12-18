@@ -4,12 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
-## [1.1.4] - 2025-04-09
+## [1.2.0] - 2025-12-18
 
 ### Changed
 
 - change tokio dependency version
 - done code more idiomatic
+- handle optional directory name for root level directory in config
 
 ## [1.1.3] - 2025-03-28
 
