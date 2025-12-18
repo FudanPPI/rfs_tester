@@ -112,7 +112,7 @@ A new feature has been added that allows you to create a copy of a specified dir
 
 Directory configuration can specify the name and content of:
 
-- name - string representing the directory name
+- name - string representing the directory name (Optional for low level directory)
 - content - a list of internal file system elements (directories, files, links).
 
 Example using the YAML:
@@ -121,6 +121,20 @@ Example using the YAML:
 ---
   - !directory
       name: test
+      content:
+        - !file
+            name: test.txt
+            content: empty
+        - !link
+            name: test_link
+            target: test.txt
+```
+
+without container-directory name:
+
+```yaml
+---
+  - !directory
       content:
         - !file
             name: test.txt
@@ -152,11 +166,39 @@ or the same using the JSON:
 }
 ```
 
+or without container-directory name:
+
+```json
+{
+  "content": [
+    {
+      "file": {
+        "name": "test.txt",
+        "content": "empty"
+      }
+    },
+    {
+      "link": {
+        "name": "test_link",
+        "target": "test.txt"
+      }
+    }
+  ]
+}
+```
+
 ### Configuration example of cloning directory
 
 ```ymal
 - !clone_directory
     name: test_yaml_config_with_clone_directory
+    source: src
+```
+
+The name of root level cloned directory can be skipped and will be generated automatically:
+
+```ymal
+- !clone_directory
     source: src
 ```
 

@@ -27,7 +27,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize, Eq, PartialEq, Clone)]
 pub struct CloneDirectoryConf {
     /// A directory will be created with the given name.
-    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
 
     /// The name of the destination directory for the copy.
     pub source: String,

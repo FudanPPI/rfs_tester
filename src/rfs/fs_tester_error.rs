@@ -53,6 +53,10 @@ impl FsTesterError {
         fs_tester_error!(ErrorCode::LinksNotAllowed)
     }
 
+    pub fn directory_name_required() -> Self {
+        fs_tester_error!(ErrorCode::DirectoryNameRequired)
+    }
+
     /// An error instance is created when an input/output error occurs.
     pub fn io_error(err: std::io::Error) -> Self {
         fs_tester_error!(ErrorCode::Io(err))
@@ -91,7 +95,9 @@ impl FsTesterError {
     /// - `Category::Io` - failure to read or write data
     pub fn classify(&self) -> Category {
         match self.err.code {
-            ErrorCode::EmptyConfig | ErrorCode::ShouldStartFromDirectory => Category::ConfigFormat,
+            ErrorCode::EmptyConfig
+            | ErrorCode::ShouldStartFromDirectory
+            | ErrorCode::DirectoryNameRequired => Category::ConfigFormat,
             ErrorCode::LinksNotAllowed => Category::NotAllowedSettings,
             ErrorCode::JsonSyntax(_) | ErrorCode::YamlSyntax(_) => Category::Syntax,
             ErrorCode::Io(_) | ErrorCode::WalkDir(_) => Category::Io,
@@ -171,6 +177,10 @@ pub(crate) enum ErrorCode {
     /// has links entries notify this error
     LinksNotAllowed,
 
+    /// Directory at non-root level must have specified name.
+    /// Only root directory can have auto generated name.
+    DirectoryNameRequired,
+
     /// Yaml parser encountered error.
     YamlSyntax(serde_yaml::Error),
 
@@ -219,6 +229,9 @@ impl Display for ErrorCode {
                     by setting the LINKS_ALLOWED environment variable to "Y".
                     "#
                 )
+            }
+            ErrorCode::DirectoryNameRequired => {
+                write!(f, "Directory for non-root level must have name")
             }
             ErrorCode::WalkDir(err) => write!(f, "Walkdir error: {}", err),
             ErrorCode::Io(err) => write!(f, "IO error: {}", err),
@@ -276,7 +289,8 @@ impl std::error::Error for FsTesterError {
             ErrorCode::JoinError(err) => Some(err),
             ErrorCode::EmptyConfig
             | ErrorCode::LinksNotAllowed
-            | ErrorCode::ShouldStartFromDirectory => None,
+            | ErrorCode::ShouldStartFromDirectory
+            | ErrorCode::DirectoryNameRequired => None,
         }
     }
 }
@@ -472,6 +486,16 @@ mod tests {
                     If you want to enable the use of links, you can do so at your own risk
                     by setting the LINKS_ALLOWED environment variable to "Y".
                     "#
+        );
+    }
+
+    #[test]
+    fn test_display_fmt_for_directory_name_required() {
+        let error = FsTesterError::directory_name_required();
+
+        assert_eq!(
+            format!("{}", error),
+            "Directory for non-root level must have name"
         );
     }
 
