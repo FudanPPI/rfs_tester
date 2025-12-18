@@ -210,7 +210,12 @@ impl FsTester {
         let name = if level == 0 {
             String::from(conf.clone().name.clone().unwrap_or("tmp".to_string()))
         } else {
-            String::from(conf.clone().name.clone().ok_or_else(|| FsTesterError::directory_name_required())?)
+            String::from(
+                conf.clone()
+                    .name
+                    .clone()
+                    .ok_or_else(|| FsTesterError::directory_name_required())?,
+            )
         };
         let dst_dir_path = Arc::new(Self::gen_dir_path(
             parent_path.clone().as_ref(),
@@ -736,10 +741,7 @@ mod tests {
     #[test]
     fn parser_should_accept_json_correct_simple_config_wo_dir_name() {
         assert_eq!(
-            FsTester::parse_config(
-                "[{\"directory\":{\"content\": []}}]"
-            )
-            .unwrap(),
+            FsTester::parse_config("[{\"directory\":{\"content\": []}}]").unwrap(),
             Configuration(vec!(ConfigEntry::Directory(DirectoryConf {
                 name: None,
                 content: Vec::new()
@@ -769,9 +771,7 @@ mod tests {
         })]);
 
         assert_eq!(
-            String::from(
-                "[{\"directory\":{\"content\":[]}}]"
-            ),
+            String::from("[{\"directory\":{\"content\":[]}}]"),
             serde_json::to_string(&conf).unwrap(),
         );
     }
@@ -966,7 +966,9 @@ mod tests {
             target: test.txt
     ";
         let test_conf = Configuration(vec![ConfigEntry::Directory(DirectoryConf {
-            name: Some(String::from("test_yaml_config_with_directory_and_file_and_link")),
+            name: Some(String::from(
+                "test_yaml_config_with_directory_and_file_and_link",
+            )),
             content: vec![
                 ConfigEntry::File(FileConf {
                     name: String::from("test.txt"),

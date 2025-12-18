@@ -95,7 +95,9 @@ impl FsTesterError {
     /// - `Category::Io` - failure to read or write data
     pub fn classify(&self) -> Category {
         match self.err.code {
-            ErrorCode::EmptyConfig | ErrorCode::ShouldStartFromDirectory | ErrorCode::DirectoryNameRequired => Category::ConfigFormat,
+            ErrorCode::EmptyConfig
+            | ErrorCode::ShouldStartFromDirectory
+            | ErrorCode::DirectoryNameRequired => Category::ConfigFormat,
             ErrorCode::LinksNotAllowed => Category::NotAllowedSettings,
             ErrorCode::JsonSyntax(_) | ErrorCode::YamlSyntax(_) => Category::Syntax,
             ErrorCode::Io(_) | ErrorCode::WalkDir(_) => Category::Io,
@@ -229,10 +231,7 @@ impl Display for ErrorCode {
                 )
             }
             ErrorCode::DirectoryNameRequired => {
-                write!(
-                    f,
-                    "Directory for non-root level must have name"
-                )
+                write!(f, "Directory for non-root level must have name")
             }
             ErrorCode::WalkDir(err) => write!(f, "Walkdir error: {}", err),
             ErrorCode::Io(err) => write!(f, "IO error: {}", err),
@@ -494,7 +493,10 @@ mod tests {
     fn test_display_fmt_for_directory_name_required() {
         let error = FsTesterError::directory_name_required();
 
-        assert_eq!(format!("{}", error), "Directory for non-root level must have name");
+        assert_eq!(
+            format!("{}", error),
+            "Directory for non-root level must have name"
+        );
     }
 
     #[test]
