@@ -211,9 +211,8 @@ impl FsTester {
         } else {
             conf.clone()
                 .name
-                    .clone()
-                    .ok_or_else(|| FsTesterError::directory_name_required())?,
-            )
+                .clone()
+                .ok_or(FsTesterError::directory_name_required())?
         };
         let dst_dir_path = Arc::new(Self::gen_dir_path(
             parent_path.clone().as_ref(),
@@ -261,7 +260,7 @@ impl FsTester {
                     .clone()
                     .name
                     .clone()
-                    .ok_or_else(|| FsTesterError::directory_name_required())?,
+                    .ok_or(FsTesterError::directory_name_required())?,
             )
         };
         let dst_dir_path = Arc::new(Self::gen_dir_path(
