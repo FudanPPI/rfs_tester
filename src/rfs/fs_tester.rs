@@ -1,6 +1,5 @@
 use futures::future::BoxFuture;
 use futures::FutureExt;
-use rand::Rng;
 use std::env;
 use std::sync::Arc;
 use std::{
@@ -69,7 +68,7 @@ pub struct FsTester {
 
 impl FsTester {
     fn get_random_code() -> u64 {
-        rand::rng().random::<u64>()
+        rand::random::<u64>()
     }
 
     fn gen_dir_path(dir_path: &Path, name: &str, level: u32) -> PathBuf {
@@ -124,7 +123,7 @@ impl FsTester {
             let src_entry_path = Arc::new(PathBuf::from(entry.path()));
             let filename = src_entry_path
                 .iter()
-                .last()
+                .next_back()
                 .expect("source dir should not be empty");
             let dst_entry_path = Arc::new(dst_path.clone().join(filename));
             let entry_metadata = entry.clone().metadata()?;
@@ -208,11 +207,10 @@ impl FsTester {
         semaphore: Arc<Semaphore>,
     ) -> Result<String> {
         let name = if level == 0 {
-            String::from(conf.clone().name.clone().unwrap_or("tmp".to_string()))
+            conf.clone().name.clone().unwrap_or("tmp".to_string())
         } else {
-            String::from(
-                conf.clone()
-                    .name
+            conf.clone()
+                .name
                     .clone()
                     .ok_or_else(|| FsTesterError::directory_name_required())?,
             )
