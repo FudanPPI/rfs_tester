@@ -247,21 +247,17 @@ impl FsTester {
     ) -> Result<String> {
         let directory_conf = directory_conf.clone();
         let dir_name = if level == 0 {
-            String::from(
-                directory_conf
-                    .clone()
-                    .name
-                    .clone()
-                    .unwrap_or("tmp".to_string()),
-            )
+            directory_conf
+                .clone()
+                .name
+                .clone()
+                .unwrap_or("tmp".to_string())
         } else {
-            String::from(
-                directory_conf
-                    .clone()
-                    .name
-                    .clone()
-                    .ok_or(FsTesterError::directory_name_required())?,
-            )
+            directory_conf
+                .clone()
+                .name
+                .clone()
+                .ok_or(FsTesterError::directory_name_required())?
         };
         let dst_dir_path = Arc::new(Self::gen_dir_path(
             parent_path.clone().as_ref(),
