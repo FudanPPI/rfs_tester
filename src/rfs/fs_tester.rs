@@ -573,7 +573,7 @@ impl Drop for FsTester {
             if let Err(e) = std::fs::remove_dir_all(&self.base_dir) {
                 eprintln!(
                     "Failed to delete directory {} due error: {}",
-                    &self.base_dir, e
+                    self.base_dir, e
                 );
             }
         } else {
