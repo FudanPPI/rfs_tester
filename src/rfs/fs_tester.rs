@@ -1057,7 +1057,7 @@ mod tests {
                 assert!(m_data.is_dir());
             })?;
 
-            let fs_tester_file = PathBuf::from(rfs_dir_path).join("fs_tester.rs");
+            let fs_tester_file = rfs_dir_path.join("fs_tester.rs");
             fs::metadata(fs_tester_file).map(|m_data| {
                 assert!(m_data.size() > 0);
             })?;
@@ -1098,7 +1098,7 @@ mod tests {
                 assert!(m_data.is_dir());
             })?;
 
-            let fs_tester_file = PathBuf::from(rfs_dir_path).join("fs_tester.rs");
+            let fs_tester_file = rfs_dir_path.join("fs_tester.rs");
             fs::metadata(fs_tester_file).map(|m_data| {
                 assert!(m_data.size() > 0);
             })?;
